@@ -77,7 +77,45 @@ h1{text-align:center;}
 
 </div>
 
-<script>
+<function calc(){
+
+let r = Number(document.getElementById("revenue").value);
+let c = Number(document.getElementById("costs").value);
+
+let profit = r - c;
+let margin = c > 0 ? (profit / c) * 100 : 0;
+
+// 🎯 Startup Score
+let score = 50;
+
+if(profit > 0) score += 20;
+if(margin > 20) score += 20;
+if(profit > 1000) score += 10;
+
+score = Math.min(100, score);
+
+// 📊 result
+document.getElementById("result").innerHTML =
+"Прибыль: $" + profit.toFixed(2) + "<br>" +
+"Маржа: " + margin.toFixed(2) + "%<br>" +
+"Startup Score: " + score + "/100";
+
+// 🧠 AI logic
+let ai = "";
+
+if(score > 80){
+ai = "Сильный бизнес. Можно масштабировать.";
+}
+else if(score > 50){
+ai = "Рабочая модель, но есть риски.";
+}
+else{
+ai = "Высокий риск. Нужно улучшить экономику.";
+}
+
+document.getElementById("ai").innerHTML = ai;
+
+}>
 function calc(){
 
 let r = Number(document.getElementById("revenue").value);
