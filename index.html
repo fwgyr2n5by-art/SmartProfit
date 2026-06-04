@@ -80,11 +80,31 @@ font-weight:bold;
 <body>
 
 <div class="container">
+<div style="text-align:center;margin-bottom:30px;">
+    <h1 style="font-size:42px;margin-bottom:10px;">
+        SmartProfit AI
+    </h1>
 
+    <p style="font-size:18px;opacity:0.8;">
+        AI-powered business intelligence for founders
+    </p>
+
+    <p style="opacity:0.6;">
+        Analyze profitability, ROI and startup health in seconds.
+    </p>
+</div>
 <div class="header">SmartProfit AI</div>
 <div class="sub">YC-style business intelligence dashboard for founders</div>
+<div class="card" style="margin-bottom:20px;">
+<h3>Features</h3>
 
-<div class="grid">
+<p>📊 Financial Analytics</p>
+<p>🧠 AI Business Insights</p>
+<p>📈 Growth Forecasting</p>
+<p>🎯 Startup Health Score</p>
+
+</div>
+<div class="grid"> 
 
 <div class="card">
 <div class="big">Inputs</div>
@@ -108,7 +128,9 @@ font-weight:bold;
 
 <div class="card">
 <div class="big">Risk Score</div>
-<div id="risk">—</div>
+<div id="risk">
+Startup Health Score: —
+</div>
 </div>
 
 </div>
@@ -132,10 +154,9 @@ let i = Number(document.getElementById("investment").value || 0);
 let profit = r - c;
 let margin = c > 0 ? (profit / c) * 100 : 0;
 let roi = i > 0 ? (profit / i) * 100 : 0;
-
 // risk score (YC-style metric)
 let risk = 100;
-
+let annualProfit = profit * 12;
 if(profit < 0) risk -= 40;
 if(margin < 20) risk -= 20;
 if(roi < 10) risk -= 20;
@@ -147,8 +168,8 @@ risk = Math.max(0, Math.min(100, risk));
 document.getElementById("metrics").innerHTML =
 `💰 Profit: $${profit.toFixed(2)}<br>
 📊 Margin: ${margin.toFixed(1)}%<br>
-📈 ROI: ${roi.toFixed(1)}%`;
-
+📈 ROI: ${roi.toFixed(1)}%`;<br>
+📅 Annual Projection: $${annualProfit.toFixed(2)}
 // AI INSIGHT (YC style)
 let ai = "";
 
@@ -166,7 +187,7 @@ document.getElementById("ai").innerHTML = ai;
 
 // risk display
 document.getElementById("risk").innerHTML =
-`Risk Score: ${risk}/100`;
+`🚀 Startup Health Score: ${risk}/100`;
 
 // chart
 draw(r,c,profit);
