@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SmartProfit</title>
+
+<style>
+body{
+font-family:Arial,sans-serif;
+background:#f4f4f4;
+padding:30px;
+}
+
+.container{
+background:white;
+max-width:400px;
+margin:auto;
+padding:20px;
+border-radius:12px;
+box-shadow:0 0 10px rgba(0,0,0,0.15);
+}
+
+input{
+width:100%;
+padding:10px;
+margin-top:10px;
+box-sizing:border-box;
+}
+
+button{
+width:100%;
+padding:12px;
+margin-top:15px;
+border:none;
+border-radius:6px;
+background:#2563eb;
+color:white;
+font-size:16px;
+}
+
+.result{
+margin-top:20px;
+font-size:18px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h2>SmartProfit</h2>
+
+<input id="revenue" type="number" placeholder="Revenue">
+
+<input id="costs" type="number" placeholder="Costs">
+
+<button onclick="calculateProfit()">
+Calculate
+</button>
+
+<div class="result" id="result"></div>
+</div>
+
+<script>
+function calculateProfit(){
+
+let revenue =
+Number(document.getElementById("revenue").value);
+
+let costs =
+Number(document.getElementById("costs").value);
+
+let profit = revenue - costs;
+
+let margin = 0;
+
+if(costs > 0){
+margin = (profit / costs) * 100;
+}
+
+document.getElementById("result").innerHTML =
+"Profit: $" + profit.toFixed(2)
++ "<br>" +
+"Profit Margin: "
++ margin.toFixed(2)
++ "%";
+}
+</script>
+
+</body>
+</html>
