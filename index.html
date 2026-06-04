@@ -2,214 +2,228 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>SmartProfit AI – YC Edition</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartProfit AI</title>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body{
-margin:0;
-font-family: Inter, Arial;
-background:#0a0f1c;
-color:white;
-display:flex;
-justify-content:center;
-padding:20px;
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#0f172a;
+    color:white;
 }
 
 .container{
-width:100%;
-max-width:850px;
+    max-width:900px;
+    margin:auto;
+    padding:20px;
 }
 
-.header{
-font-size:28px;
-font-weight:bold;
-margin-bottom:5px;
+.hero{
+    text-align:center;
+    margin-bottom:25px;
 }
 
-.sub{
-opacity:0.6;
-margin-bottom:20px;
+.hero h1{
+    font-size:42px;
+    margin-bottom:10px;
 }
 
-.grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:15px;
+.hero p{
+    opacity:.8;
 }
 
 .card{
-background:rgba(255,255,255,0.06);
-padding:15px;
-border-radius:14px;
-backdrop-filter: blur(10px);
+    background:#1e293b;
+    border-radius:16px;
+    padding:20px;
+    margin-bottom:20px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:20px;
 }
 
 input{
-width:100%;
-padding:12px;
-margin-top:10px;
-border-radius:10px;
-border:none;
-outline:none;
+    width:100%;
+    box-sizing:border-box;
+    padding:12px;
+    margin-top:10px;
+    border:none;
+    border-radius:10px;
 }
 
 button{
-width:100%;
-padding:14px;
-margin-top:15px;
-border:none;
-border-radius:10px;
-background:#4f46e5;
-color:white;
-font-weight:bold;
-cursor:pointer;
+    width:100%;
+    margin-top:15px;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    background:#2563eb;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
 }
 
-.big{
-font-size:22px;
-font-weight:bold;
+.metric{
+    margin-bottom:10px;
 }
 
-.good{color:#22c55e;}
-.bad{color:#ef4444;}
-.warn{color:#facc15;}
+#chart{
+    background:white;
+    border-radius:10px;
+}
 </style>
 </head>
 
 <body>
 
 <div class="container">
-<div style="text-align:center;margin-bottom:30px;">
-    <h1 style="font-size:42px;margin-bottom:10px;">
-        SmartProfit AI
-    </h1>
 
-    <p style="font-size:18px;opacity:0.8;">
-        AI-powered business intelligence for founders
-    </p>
+    <div class="hero">
+        <h1>SmartProfit AI</h1>
+        <p>Business Intelligence Dashboard for Founders</p>
+    </div>
 
-    <p style="opacity:0.6;">
-        Analyze profitability, ROI and startup health in seconds.
-    </p>
-</div>
-<div class="header">SmartProfit AI</div>
-<div class="sub">YC-style business intelligence dashboard for founders</div>
-<div class="card" style="margin-bottom:20px;">
-<h3>Features</h3>
+    <div class="card">
+        <h3>Features</h3>
+        <p>📊 Financial Analytics</p>
+        <p>🧠 AI Business Insights</p>
+        <p>📈 Growth Forecasting</p>
+        <p>🎯 Startup Health Score</p>
+    </div>
 
-<p>📊 Financial Analytics</p>
-<p>🧠 AI Business Insights</p>
-<p>📈 Growth Forecasting</p>
-<p>🎯 Startup Health Score</p>
+    <div class="grid">
 
-</div>
-<div class="grid"> 
+        <div class="card">
+            <h3>Inputs</h3>
 
-<div class="card">
-<div class="big">Inputs</div>
+            <input id="revenue" type="number" placeholder="Monthly Revenue ($)">
+            <input id="costs" type="number" placeholder="Monthly Costs ($)">
+            <input id="investment" type="number" placeholder="Investment ($)">
 
-<input id="revenue" type="number" placeholder="Monthly Revenue ($)">
-<input id="costs" type="number" placeholder="Monthly Costs ($)">
-<input id="investment" type="number" placeholder="Investment ($)">
+            <button onclick="analyze()">
+                Generate Analysis
+            </button>
+        </div>
 
-<button onclick="run()">Run Analysis</button>
-</div>
+        <div class="card">
+            <h3>Metrics</h3>
+            <div id="metrics">
+                Enter values and click Generate Analysis
+            </div>
+        </div>
 
-<div class="card">
-<div class="big">Metrics</div>
-<div id="metrics">No data yet</div>
-</div>
+        <div class="card">
+            <h3>AI Insight</h3>
+            <div id="ai">
+                Waiting for data...
+            </div>
+        </div>
 
-<div class="card">
-<div class="big">AI Investor Insight</div>
-<div id="ai">Waiting for analysis...</div>
-</div>
+        <div class="card">
+            <h3>Startup Health Score</h3>
+            <div id="risk">
+                —
+            </div>
+        </div>
 
-<div class="card">
-<div class="big">Risk Score</div>
-<div id="risk">
-Startup Health Score: —
-</div>
-</div>
+    </div>
 
-</div>
-
-<div class="card" style="margin-top:15px;">
-<canvas id="chart"></canvas>
-</div>
+    <div class="card">
+        <canvas id="chart"></canvas>
+    </div>
 
 </div>
 
 <script>
 
-let chart;
+let chart = null;
 
-function run(){
+function analyze(){
 
-let r = Number(document.getElementById("revenue").value);
-let c = Number(document.getElementById("costs").value);
-let i = Number(document.getElementById("investment").value || 0);
+    const revenue =
+        Number(document.getElementById("revenue").value);
 
-let profit = r - c;
-let margin = c > 0 ? (profit / c) * 100 : 0;
-let roi = i > 0 ? (profit / i) * 100 : 0;
-// risk score (YC-style metric)
-let risk = 100;
-let annualProfit = profit * 12;
-if(profit < 0) risk -= 40;
-if(margin < 20) risk -= 20;
-if(roi < 10) risk -= 20;
-if(r > c) risk += 10;
+    const costs =
+        Number(document.getElementById("costs").value);
 
-risk = Math.max(0, Math.min(100, risk));
+    const investment =
+        Number(document.getElementById("investment").value || 0);
 
-// metrics
-document.getElementById("metrics").innerHTML =
-`💰 Profit: $${profit.toFixed(2)}<br>
-📊 Margin: ${margin.toFixed(1)}%<br>
-📈 ROI: ${roi.toFixed(1)}%`;<br>
-📅 Annual Projection: $${annualProfit.toFixed(2)}
-// AI INSIGHT (YC style)
-let ai = "";
+    const profit = revenue - costs;
 
-if(risk > 75){
-ai = "🟢 Strong startup metrics. This could scale.";
+    const margin =
+        costs > 0
+        ? (profit / costs) * 100
+        : 0;
+
+    const roi =
+        investment > 0
+        ? (profit / investment) * 100
+        : 0;
+
+    const annualProfit = profit * 12;
+
+    let health = 50;
+
+    if(profit > 0) health += 20;
+    if(margin > 20) health += 15;
+    if(roi > 10) health += 15;
+
+    health = Math.min(100, health);
+
+    document.getElementById("metrics").innerHTML =
+        `
+        <div class="metric">💰 Profit: $${profit.toFixed(2)}</div>
+        <div class="metric">📊 Margin: ${margin.toFixed(2)}%</div>
+        <div class="metric">📈 ROI: ${roi.toFixed(2)}%</div>
+        <div class="metric">📅 Annual Forecast: $${annualProfit.toFixed(2)}</div>
+        `;
+
+    let insight = "";
+
+    if(profit > 0){
+        insight =
+        "🟢 Business is profitable. Focus on growth and customer acquisition.";
+    } else {
+        insight =
+        "🔴 Business is losing money. Reduce costs or increase revenue.";
+    }
+
+    document.getElementById("ai").innerHTML = insight;
+
+    document.getElementById("risk").innerHTML =
+        `🚀 Startup Health Score: ${health}/100`;
+
+    drawChart(revenue,costs,profit);
 }
-else if(risk > 50){
-ai = "🟡 Early-stage viability. Needs optimization.";
-}
-else{
-ai = "🔴 High risk business model. Not VC-ready yet.";
-}
 
-document.getElementById("ai").innerHTML = ai;
+function drawChart(revenue,costs,profit){
 
-// risk display
-document.getElementById("risk").innerHTML =
-`🚀 Startup Health Score: ${risk}/100`;
+    const ctx =
+        document.getElementById("chart").getContext("2d");
 
-// chart
-draw(r,c,profit);
+    if(chart){
+        chart.destroy();
+    }
 
-}
-
-function draw(r,c,p){
-
-let ctx = document.getElementById("chart").getContext("2d");
-
-if(chart) chart.destroy();
-
-chart = new Chart(ctx,{
-type:"bar",
-data:{
-labels:["Revenue","Costs","Profit"],
-datasets:[{
-data:[r,c,p]
-}]
-}
-});
-
+    chart = new Chart(ctx,{
+        type:"bar",
+        data:{
+            labels:["Revenue","Costs","Profit"],
+            datasets:[{
+                data:[revenue,costs,profit]
+            }]
+        },
+        options:{
+            responsive:true
+        }
+    });
 }
 
 </script>
