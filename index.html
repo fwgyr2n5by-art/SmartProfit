@@ -1,56 +1,84 @@
 <!DOCTYPE html>
 <html lang="ru">
-<<head>
-
-<meta charset="UTF-8">
-<title>SmartProfit AI</title>
-
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-742M5MNWXQ"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-742M5MNWXQ');
-</script>
-
-</head>>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SmartProfit AI</title>
+<title>SmartProfit AI — SaaS Analytics</title>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Google Analytics (оставь свой ID) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-742M5MNWXQ"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-742M5MNWXQ');
+</script>
 
 <style>
 body{
 margin:0;
-font-family:Arial;
+font-family:Arial, sans-serif;
 background:#0b1220;
 color:white;
 }
 
+/* HERO */
+.hero{
+padding:80px 20px;
+text-align:center;
+}
+
+.hero h1{
+font-size:42px;
+margin-bottom:10px;
+}
+
+.hero p{
+opacity:0.8;
+font-size:18px;
+max-width:600px;
+margin:auto;
+}
+
+.btn{
+margin-top:20px;
+padding:14px 22px;
+background:#4f46e5;
+border:none;
+border-radius:10px;
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+
+/* SECTIONS */
 .container{
-max-width:900px;
+max-width:1000px;
 margin:auto;
 padding:20px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:15px;
+margin-top:40px;
 }
 
 .card{
 background:rgba(255,255,255,0.06);
 padding:18px;
 border-radius:14px;
-margin-top:15px;
 backdrop-filter: blur(10px);
 }
 
+/* DASHBOARD */
 input{
 width:100%;
 padding:12px;
 margin-top:10px;
-border:none;
 border-radius:10px;
-outline:none;
+border:none;
 }
 
 button{
@@ -65,23 +93,16 @@ font-weight:bold;
 cursor:pointer;
 }
 
-h1{
-text-align:center;
-}
-
-.sub{
-text-align:center;
-opacity:0.7;
-}
-
 canvas{
 background:white;
 border-radius:10px;
 margin-top:10px;
 }
 
-.small{
-opacity:0.7;
+.footer{
+text-align:center;
+padding:40px;
+opacity:0.6;
 font-size:13px;
 }
 </style>
@@ -89,47 +110,76 @@ font-size:13px;
 
 <body>
 
-<div class="container">
-
+<!-- HERO -->
+<div class="hero">
 <h1>SmartProfit AI</h1>
-<p class="sub">Business analytics SaaS prototype</p>
+<p>
+AI-powered SaaS platform that analyzes business profitability, margins,
+and investment readiness in seconds.
+</p>
 
-<!-- STATS -->
-<div class="card">
-<h3>📊 Usage Analytics</h3>
-<div>Всего расчетов: <b id="total">0</b></div>
-<div class="small">Счётчик увеличивается при каждом анализе</div>
+<button class="btn" onclick="document.getElementById('app').scrollIntoView()">
+Start analyzing
+</button>
 </div>
 
-<!-- INPUT -->
+<div class="container">
+
+<!-- FEATURES -->
+<div class="grid">
+
 <div class="card">
-<h3>📊 Анализ бизнеса</h3>
+<h3>📊 Financial Analytics</h3>
+<p>Analyze revenue, costs, profit and margins instantly.</p>
+</div>
+
+<div class="card">
+<h3>🚀 Startup Score</h3>
+<p>Get investment readiness score for your business.</p>
+</div>
+
+<div class="card">
+<h3>📈 Smart Insights</h3>
+<p>Understand if your business is scalable or risky.</p>
+</div>
+
+</div>
+
+<!-- APP -->
+<div id="app" class="card" style="margin-top:40px;">
+<h2>Live Demo</h2>
 
 <input id="rev" type="number" placeholder="Revenue ($)">
 <input id="cost" type="number" placeholder="Costs ($)">
 
-<button onclick="calc()">Run Analysis</button>
+<button onclick="calc()">Analyze Business</button>
 
 <div id="result"></div>
 <div id="score"></div>
-</div>
 
-<!-- CHART -->
-<div class="card">
-<h3>📈 Chart</h3>
 <canvas id="chart"></canvas>
 </div>
 
+</div>
+
+<div class="footer">
+SmartProfit AI — SaaS prototype for business intelligence
 </div>
 
 <script>
 
 let chart;
 
-/* 🔢 GLOBAL COUNTER (localStorage) */
-let total = localStorage.getItem("total") || 0;
-document.getElementById("total").innerText = total;
+/* ANALYTICS EVENT */
+function trackEvent(){
+if(typeof gtag !== "undefined"){
+gtag('event','analysis_run',{
+event_category:'engagement'
+});
+}
+}
 
+/* MAIN FUNCTION */
 function calc(){
 
 let r = Number(document.getElementById("rev").value);
@@ -143,27 +193,24 @@ let score = 50;
 if(profit > 0) score += 20;
 if(margin > 20) score += 20;
 if(profit > 2000) score += 10;
-
 score = Math.min(100, score);
 
 /* UI */
 document.getElementById("result").innerHTML =
-"💰 Profit: $" + profit.toFixed(2) + "<br>" +
-"📊 Margin: " + margin.toFixed(2) + "%";
+`💰 Profit: $${profit.toFixed(2)} <br>
+📊 Margin: ${margin.toFixed(2)}%`;
 
 document.getElementById("score").innerHTML =
-"🚀 Startup Score: " + score + "/100";
-
-/* 📊 COUNTER + SAVE */
-total++;
-localStorage.setItem("total", total);
-document.getElementById("total").innerText = total;
+`🚀 Startup Score: ${score}/100`;
 
 /* CHART */
 draw(r,c,profit);
+
+/* EVENT TRACK */
+trackEvent();
 }
 
-/* 📈 CHART */
+/* CHART */
 function draw(r,c,p){
 
 let ctx=document.getElementById("chart").getContext("2d");
@@ -174,14 +221,17 @@ chart=new Chart(ctx,{
 type:"bar",
 data:{
 labels:["Revenue","Costs","Profit"],
-datasets:[{
-data:[r,c,p]
-}]
+datasets:[{data:[r,c,p]}]
+},
+options:{
+plugins:{legend:{display:false}}
 }
 });
 }
 
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </body>
 </html>
