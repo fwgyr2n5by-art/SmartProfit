@@ -1,46 +1,75 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>SmartProfit</title>
+<title>SmartProfit Pro</title>
 
 <style>
 body{
-font-family:Arial,sans-serif;
-background:#f4f4f4;
-padding:30px;
+margin:0;
+font-family:Arial;
+background:linear-gradient(135deg,#0f172a,#1e293b);
+color:white;
+display:flex;
+justify-content:center;
+padding:20px;
 }
 
 .container{
-background:white;
-max-width:400px;
-margin:auto;
+width:100%;
+max-width:500px;
+background:rgba(255,255,255,0.08);
+backdrop-filter: blur(12px);
+border-radius:20px;
 padding:20px;
-border-radius:12px;
-box-shadow:0 0 10px rgba(0,0,0,0.15);
+box-shadow:0 10px 40px rgba(0,0,0,0.4);
+}
+
+h1{
+text-align:center;
+margin-bottom:10px;
 }
 
 input{
 width:100%;
-padding:10px;
+padding:12px;
 margin-top:10px;
-box-sizing:border-box;
+border-radius:10px;
+border:none;
+outline:none;
+font-size:16px;
 }
 
 button{
 width:100%;
-padding:12px;
+padding:14px;
 margin-top:15px;
 border:none;
-border-radius:6px;
-background:#2563eb;
+border-radius:10px;
+background:linear-gradient(90deg,#3b82f6,#06b6d4);
 color:white;
 font-size:16px;
+cursor:pointer;
+}
+
+.card{
+margin-top:15px;
+padding:15px;
+background:rgba(255,255,255,0.1);
+border-radius:12px;
 }
 
 .result{
-margin-top:20px;
+margin-top:15px;
 font-size:18px;
+}
+
+.good{
+color:#22c55e;
+}
+
+.bad{
+color:#ef4444;
 }
 </style>
 </head>
@@ -48,43 +77,80 @@ font-size:18px;
 <body>
 
 <div class="container">
-<h2>SmartProfit</h2>
+<h1>SmartProfit Pro 📊</h1>
 
-<input id="revenue" type="number" placeholder="Revenue">
+<input id="revenue" type="number" placeholder="Revenue ($)">
+<input id="costs" type="number" placeholder="Costs ($)">
+<input id="investment" type="number" placeholder="Investment ($ optional)">
 
-<input id="costs" type="number" placeholder="Costs">
+<button onclick="calculate()">Calculate Insights</button>
 
-<button onclick="calculateProfit()">
-Calculate
-</button>
+<div class="card" id="result"></div>
+<div class="card" id="insight"></div>
 
-<div class="result" id="result"></div>
+<canvas id="chart" width="400" height="200"></canvas>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
-function calculateProfit(){
 
-let revenue =
-Number(document.getElementById("revenue").value);
+let chart;
 
-let costs =
-Number(document.getElementById("costs").value);
+function calculate(){
+
+let revenue = Number(document.getElementById("revenue").value);
+let costs = Number(document.getElementById("costs").value);
+let investment = Number(document.getElementById("investment").value || 0);
 
 let profit = revenue - costs;
-
-let margin = 0;
-
-if(costs > 0){
-margin = (profit / costs) * 100;
-}
+let margin = costs > 0 ? (profit / costs) * 100 : 0;
+let roi = investment > 0 ? (profit / investment) * 100 : 0;
 
 document.getElementById("result").innerHTML =
-"Profit: $" + profit.toFixed(2)
-+ "<br>" +
-"Profit Margin: "
-+ margin.toFixed(2)
-+ "%";
+"💰 Profit: $" + profit.toFixed(2) + "<br>" +
+"📊 Margin: " + margin.toFixed(2) + "%<br>" +
+"📈 ROI: " + roi.toFixed(2) + "%";
+
+let insight = "";
+
+if(profit > 0){
+insight = "🟢 Business is profitable and scalable";
+} else {
+insight = "🔴 Business is losing money — optimize costs";
 }
+
+if(margin > 30){
+insight += "<br>🔥 High margin business model";
+} else if(margin > 10){
+insight += "<br>🟡 Medium margin";
+} else {
+insight += "<br>⚠️ Low margin — risky model";
+}
+
+document.getElementById("insight").innerHTML = insight;
+
+drawChart(revenue, costs);
+}
+
+function drawChart(revenue, costs){
+
+let ctx = document.getElementById("chart").getContext("2d");
+
+if(chart) chart.destroy();
+
+chart = new Chart(ctx, {
+type: "bar",
+data: {
+labels: ["Revenue", "Costs", "Profit"],
+datasets: [{
+data: [revenue, costs, revenue - costs]
+}]
+}
+});
+
+}
+
 </script>
 
 </body>
