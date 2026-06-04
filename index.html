@@ -11,79 +11,64 @@
 body{
 margin:0;
 font-family:Arial;
-background:#0a1020;
+background:#0b1220;
 color:white;
 }
 
 .container{
-max-width:950px;
+max-width:900px;
 margin:auto;
 padding:20px;
 }
 
-/* NAV */
-.nav{
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-margin-bottom:15px;
-}
-
-.nav button{
-background:#1f2a44;
-padding:10px 14px;
-border:none;
-border-radius:8px;
-color:white;
-cursor:pointer;
-}
-
-.nav button:hover{
-background:#2d3b5f;
-}
-
-/* CARD */
 .card{
 background:rgba(255,255,255,0.06);
-padding:16px;
+padding:18px;
 border-radius:14px;
 margin-top:15px;
 backdrop-filter: blur(10px);
 }
 
-/* INPUT */
-input, textarea{
+input{
 width:100%;
 padding:12px;
-margin-top:8px;
+margin-top:10px;
 border:none;
-border-radius:8px;
+border-radius:10px;
 outline:none;
 }
 
-/* BUTTON */
 button{
 width:100%;
 padding:12px;
 margin-top:10px;
 border:none;
-border-radius:8px;
+border-radius:10px;
 background:#4f46e5;
 color:white;
 font-weight:bold;
 cursor:pointer;
 }
 
-/* PAGES */
-.page{display:none;}
-.active{display:block;}
+h1{
+text-align:center;
+}
+
+.sub{
+text-align:center;
+opacity:0.7;
+}
 
 canvas{
 background:white;
 border-radius:10px;
 margin-top:10px;
 }
-.small{opacity:0.7;font-size:13px;}
+
+.small{
+opacity:0.7;
+font-size:13px;
+}
 </style>
 </head>
 
@@ -91,77 +76,33 @@ margin-top:10px;
 
 <div class="container">
 
-<!-- NAVIGATION -->
-<div class="nav">
-<button onclick="show('login')">🔐 Login</button>
-<button onclick="show('dashboard')">📊 Dashboard</button>
-<button onclick="show('chat')">💬 AI Chat</button>
-<button onclick="show('report')">📄 Report</button>
-</div>
+<h1>SmartProfit AI</h1>
+<p class="sub">Business analytics SaaS prototype</p>
 
-<!-- LOGIN -->
-<div id="login" class="page active">
+<!-- STATS -->
 <div class="card">
-<h2>SmartProfit AI Login</h2>
-
-<input id="user" placeholder="Username">
-<input id="pass" type="password" placeholder="Password">
-
-<button onclick="login()">Login</button>
-
-<p class="small">Demo system — любые данные</p>
-</div>
+<h3>📊 Usage Analytics</h3>
+<div>Всего расчетов: <b id="total">0</b></div>
+<div class="small">Счётчик увеличивается при каждом анализе</div>
 </div>
 
-<!-- DASHBOARD -->
-<div id="dashboard" class="page">
-
+<!-- INPUT -->
 <div class="card">
-<h2>📊 Financial Dashboard</h2>
+<h3>📊 Анализ бизнеса</h3>
 
 <input id="rev" type="number" placeholder="Revenue ($)">
 <input id="cost" type="number" placeholder="Costs ($)">
 
-<button onclick="calc()">Analyze Business</button>
+<button onclick="calc()">Run Analysis</button>
 
 <div id="result"></div>
 <div id="score"></div>
+</div>
 
+<!-- CHART -->
+<div class="card">
+<h3>📈 Chart</h3>
 <canvas id="chart"></canvas>
-
-<p class="small">
-Analyses count: <span id="count">0</span>
-</p>
-</div>
-
-</div>
-
-<!-- CHAT -->
-<div id="chat" class="page">
-
-<div class="card">
-<h2>💬 AI Business Assistant</h2>
-
-<textarea id="q" placeholder="Ask: profit, ROI, margin..."></textarea>
-
-<button onclick="ask()">Ask</button>
-
-<div id="answer"></div>
-</div>
-
-</div>
-
-<!-- REPORT -->
-<div id="report" class="page">
-
-<div class="card">
-<h2>📄 Investor Report Generator</h2>
-
-<button onclick="generateReport()">Generate Report</button>
-
-<div id="rep"></div>
-</div>
-
 </div>
 
 </div>
@@ -169,21 +110,11 @@ Analyses count: <span id="count">0</span>
 <script>
 
 let chart;
-let count = 0;
 
-/* NAVIGATION */
-function show(page){
-document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-document.getElementById(page).classList.add("active");
-}
+/* 🔢 GLOBAL COUNTER (localStorage) */
+let total = localStorage.getItem("total") || 0;
+document.getElementById("total").innerText = total;
 
-/* LOGIN (demo) */
-function login(){
-localStorage.setItem("user","true");
-alert("Logged in successfully (demo)");
-}
-
-/* DASHBOARD ANALYTICS */
 function calc(){
 
 let r = Number(document.getElementById("rev").value);
@@ -194,7 +125,6 @@ let margin = c > 0 ? (profit / c) * 100 : 0;
 
 /* SCORE */
 let score = 50;
-
 if(profit > 0) score += 20;
 if(margin > 20) score += 20;
 if(profit > 2000) score += 10;
@@ -203,21 +133,22 @@ score = Math.min(100, score);
 
 /* UI */
 document.getElementById("result").innerHTML =
-`💰 Profit: $${profit.toFixed(2)} <br>
-📊 Margin: ${margin.toFixed(2)}%`;
+"💰 Profit: $" + profit.toFixed(2) + "<br>" +
+"📊 Margin: " + margin.toFixed(2) + "%";
 
 document.getElementById("score").innerHTML =
-`🚀 Startup Score: ${score}/100`;
+"🚀 Startup Score: " + score + "/100";
 
-/* tracking */
-count++;
-document.getElementById("count").innerText = count;
+/* 📊 COUNTER + SAVE */
+total++;
+localStorage.setItem("total", total);
+document.getElementById("total").innerText = total;
 
-/* chart */
+/* CHART */
 draw(r,c,profit);
 }
 
-/* CHART */
+/* 📈 CHART */
 function draw(r,c,p){
 
 let ctx=document.getElementById("chart").getContext("2d");
@@ -231,52 +162,8 @@ labels:["Revenue","Costs","Profit"],
 datasets:[{
 data:[r,c,p]
 }]
-},
-options:{
-plugins:{legend:{display:false}}
 }
 });
-}
-
-/* AI CHAT */
-function ask(){
-
-let q=document.getElementById("q").value.toLowerCase();
-
-let answer="";
-
-if(q.includes("profit")){
-answer="Profit = Revenue - Costs";
-}
-else if(q.includes("roi")){
-answer="ROI measures return on investment efficiency";
-}
-else if(q.includes("margin")){
-answer="Margin = Profit / Costs × 100";
-}
-else{
-answer="I am SmartProfit AI assistant. Ask about business metrics.";
-}
-
-document.getElementById("answer").innerHTML=answer;
-}
-
-/* REPORT */
-function generateReport(){
-
-let r=document.getElementById("rev").value||0;
-let c=document.getElementById("cost").value||0;
-let p=r-c;
-
-document.getElementById("rep").innerHTML=
-`
-<b>Investor Report</b><br><br>
-Revenue: $${r}<br>
-Costs: $${c}<br>
-Profit: $${p}<br><br>
-Status: ${p>0?"Profitable":"Risky"}<br>
-Recommendation: ${p>0?"Scale business":"Reduce costs"}
-`;
 }
 
 </script>
