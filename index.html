@@ -11,71 +11,79 @@
 body{
 margin:0;
 font-family:Arial;
-background:#0b1220;
+background:#0a1020;
 color:white;
 }
 
 .container{
-max-width:900px;
+max-width:950px;
 margin:auto;
 padding:20px;
 }
 
-h1{
-text-align:center;
-margin-bottom:5px;
+/* NAV */
+.nav{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-bottom:15px;
 }
 
-.sub{
-text-align:center;
-opacity:0.7;
-margin-bottom:20px;
+.nav button{
+background:#1f2a44;
+padding:10px 14px;
+border:none;
+border-radius:8px;
+color:white;
+cursor:pointer;
 }
 
+.nav button:hover{
+background:#2d3b5f;
+}
+
+/* CARD */
 .card{
 background:rgba(255,255,255,0.06);
-padding:15px;
-border-radius:12px;
+padding:16px;
+border-radius:14px;
 margin-top:15px;
 backdrop-filter: blur(10px);
 }
 
-input{
+/* INPUT */
+input, textarea{
 width:100%;
 padding:12px;
-margin-top:10px;
-border-radius:8px;
+margin-top:8px;
 border:none;
+border-radius:8px;
 outline:none;
 }
 
+/* BUTTON */
 button{
 width:100%;
 padding:12px;
 margin-top:10px;
-background:#4f46e5;
-color:white;
 border:none;
 border-radius:8px;
-cursor:pointer;
+background:#4f46e5;
+color:white;
 font-weight:bold;
+cursor:pointer;
 }
 
-.result{
-margin-top:10px;
-line-height:1.6;
-}
-
-.ai{
-margin-top:10px;
-opacity:0.9;
-}
+/* PAGES */
+.page{display:none;}
+.active{display:block;}
 
 canvas{
 background:white;
 border-radius:10px;
 margin-top:10px;
 }
+.small{opacity:0.7;font-size:13px;}
 </style>
 </head>
 
@@ -83,41 +91,77 @@ margin-top:10px;
 
 <div class="container">
 
-<h1>SmartProfit AI</h1>
-<p class="sub">Investor-grade business intelligence dashboard</p>
-
-<!-- INPUTS -->
-<div class="card">
-<h3>📊 Ввод данных</h3>
-
-<input id="revenue" type="number" placeholder="Выручка ($)">
-<input id="costs" type="number" placeholder="Расходы ($)">
-
-<button onclick="calc()">Рассчитать анализ</button>
+<!-- NAVIGATION -->
+<div class="nav">
+<button onclick="show('login')">🔐 Login</button>
+<button onclick="show('dashboard')">📊 Dashboard</button>
+<button onclick="show('chat')">💬 AI Chat</button>
+<button onclick="show('report')">📄 Report</button>
 </div>
 
-<!-- RESULTS -->
+<!-- LOGIN -->
+<div id="login" class="page active">
 <div class="card">
-<h3>📈 Результаты</h3>
-<div id="result">Введите данные и нажмите кнопку</div>
+<h2>SmartProfit AI Login</h2>
+
+<input id="user" placeholder="Username">
+<input id="pass" type="password" placeholder="Password">
+
+<button onclick="login()">Login</button>
+
+<p class="small">Demo system — любые данные</p>
+</div>
 </div>
 
-<!-- AI -->
-<div class="card">
-<h3>🧠 AI анализ</h3>
-<div id="ai">Ожидание анализа...</div>
-</div>
+<!-- DASHBOARD -->
+<div id="dashboard" class="page">
 
-<!-- SCORE -->
 <div class="card">
-<h3>🚀 Startup Score</h3>
-<div id="score">—</div>
-</div>
+<h2>📊 Financial Dashboard</h2>
 
-<!-- CHART -->
-<div class="card">
-<h3>📊 Финансовый график</h3>
+<input id="rev" type="number" placeholder="Revenue ($)">
+<input id="cost" type="number" placeholder="Costs ($)">
+
+<button onclick="calc()">Analyze Business</button>
+
+<div id="result"></div>
+<div id="score"></div>
+
 <canvas id="chart"></canvas>
+
+<p class="small">
+Analyses count: <span id="count">0</span>
+</p>
+</div>
+
+</div>
+
+<!-- CHAT -->
+<div id="chat" class="page">
+
+<div class="card">
+<h2>💬 AI Business Assistant</h2>
+
+<textarea id="q" placeholder="Ask: profit, ROI, margin..."></textarea>
+
+<button onclick="ask()">Ask</button>
+
+<div id="answer"></div>
+</div>
+
+</div>
+
+<!-- REPORT -->
+<div id="report" class="page">
+
+<div class="card">
+<h2>📄 Investor Report Generator</h2>
+
+<button onclick="generateReport()">Generate Report</button>
+
+<div id="rep"></div>
+</div>
+
 </div>
 
 </div>
@@ -125,77 +169,114 @@ margin-top:10px;
 <script>
 
 let chart;
+let count = 0;
 
+/* NAVIGATION */
+function show(page){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+document.getElementById(page).classList.add("active");
+}
+
+/* LOGIN (demo) */
+function login(){
+localStorage.setItem("user","true");
+alert("Logged in successfully (demo)");
+}
+
+/* DASHBOARD ANALYTICS */
 function calc(){
 
-let r = Number(document.getElementById("revenue").value);
-let c = Number(document.getElementById("costs").value);
+let r = Number(document.getElementById("rev").value);
+let c = Number(document.getElementById("cost").value);
 
 let profit = r - c;
 let margin = c > 0 ? (profit / c) * 100 : 0;
 
-// SCORE (реальная логика, без фейков)
+/* SCORE */
 let score = 50;
 
 if(profit > 0) score += 20;
 if(margin > 20) score += 20;
-if(profit > 1000) score += 10;
+if(profit > 2000) score += 10;
 
 score = Math.min(100, score);
 
-// RESULTS
+/* UI */
 document.getElementById("result").innerHTML =
-"💰 Прибыль: $" + profit.toFixed(2) + "<br>" +
-"📊 Маржа: " + margin.toFixed(2) + "%";
+`💰 Profit: $${profit.toFixed(2)} <br>
+📊 Margin: ${margin.toFixed(2)}%`;
 
-// AI
-let ai = "";
-
-if(score > 80){
-ai = "🟢 Сильный бизнес. Инвестиционно привлекателен.";
-}
-else if(score > 50){
-ai = "🟡 Стабильная модель, но есть риски.";
-}
-else{
-ai = "🔴 Высокий риск. Требуется оптимизация.";
-}
-
-document.getElementById("ai").innerHTML = ai;
-
-// SCORE UI
 document.getElementById("score").innerHTML =
-"🚀 Startup Score: " + score + "/100";
+`🚀 Startup Score: ${score}/100`;
 
-// GRAPH
-drawChart(r, c, profit);
+/* tracking */
+count++;
+document.getElementById("count").innerText = count;
 
+/* chart */
+draw(r,c,profit);
 }
 
-function drawChart(r, c, p){
+/* CHART */
+function draw(r,c,p){
 
-let ctx = document.getElementById("chart").getContext("2d");
+let ctx=document.getElementById("chart").getContext("2d");
 
-if(chart){
-chart.destroy();
-}
+if(chart) chart.destroy();
 
-chart = new Chart(ctx, {
-type: "bar",
-data: {
-labels: ["Revenue", "Costs", "Profit"],
-datasets: [{
-data: [r, c, p]
+chart=new Chart(ctx,{
+type:"bar",
+data:{
+labels:["Revenue","Costs","Profit"],
+datasets:[{
+data:[r,c,p]
 }]
 },
-options: {
-responsive: true,
-plugins: {
-legend: { display: false }
-}
+options:{
+plugins:{legend:{display:false}}
 }
 });
+}
 
+/* AI CHAT */
+function ask(){
+
+let q=document.getElementById("q").value.toLowerCase();
+
+let answer="";
+
+if(q.includes("profit")){
+answer="Profit = Revenue - Costs";
+}
+else if(q.includes("roi")){
+answer="ROI measures return on investment efficiency";
+}
+else if(q.includes("margin")){
+answer="Margin = Profit / Costs × 100";
+}
+else{
+answer="I am SmartProfit AI assistant. Ask about business metrics.";
+}
+
+document.getElementById("answer").innerHTML=answer;
+}
+
+/* REPORT */
+function generateReport(){
+
+let r=document.getElementById("rev").value||0;
+let c=document.getElementById("cost").value||0;
+let p=r-c;
+
+document.getElementById("rep").innerHTML=
+`
+<b>Investor Report</b><br><br>
+Revenue: $${r}<br>
+Costs: $${c}<br>
+Profit: $${p}<br><br>
+Status: ${p>0?"Profitable":"Risky"}<br>
+Recommendation: ${p>0?"Scale business":"Reduce costs"}
+`;
 }
 
 </script>
