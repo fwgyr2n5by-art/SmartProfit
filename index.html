@@ -3,66 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SmartProfit AI — SaaS Analytics</title>
+<title>SmartProfit AI</title>
 
-<!-- Google Analytics (оставь свой ID) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-742M5MNWXQ"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-742M5MNWXQ');
-</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body{
 margin:0;
-font-family:Arial, sans-serif;
-background:#0b1220;
+font-family:Arial;
+background:linear-gradient(135deg,#0b1220,#111b33);
 color:white;
 }
 
-/* HERO */
-.hero{
-padding:80px 20px;
-text-align:center;
-}
-
-.hero h1{
-font-size:42px;
-margin-bottom:10px;
-}
-
-.hero p{
-opacity:0.8;
-font-size:18px;
-max-width:600px;
-margin:auto;
-}
-
-.btn{
-margin-top:20px;
-padding:14px 22px;
-background:#4f46e5;
-border:none;
-border-radius:10px;
-color:white;
-font-weight:bold;
-cursor:pointer;
-}
-
-/* SECTIONS */
 .container{
-max-width:1000px;
+max-width:900px;
 margin:auto;
 padding:20px;
 }
 
+.header{
+text-align:center;
+padding:20px 0;
+}
+
+.header h1{
+margin:0;
+font-size:34px;
+}
+
+.header p{
+opacity:0.7;
+}
+
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+grid-template-columns:1fr 1fr;
 gap:15px;
-margin-top:40px;
+}
+
+@media(max-width:700px){
+.grid{grid-template-columns:1fr;}
 }
 
 .card{
@@ -72,19 +52,19 @@ border-radius:14px;
 backdrop-filter: blur(10px);
 }
 
-/* DASHBOARD */
 input{
 width:100%;
 padding:12px;
 margin-top:10px;
-border-radius:10px;
 border:none;
+border-radius:10px;
+outline:none;
 }
 
 button{
 width:100%;
-padding:12px;
-margin-top:10px;
+padding:14px;
+margin-top:15px;
 border:none;
 border-radius:10px;
 background:#4f46e5;
@@ -93,124 +73,133 @@ font-weight:bold;
 cursor:pointer;
 }
 
+.result{
+margin-top:15px;
+line-height:1.6;
+}
+
 canvas{
 background:white;
 border-radius:10px;
 margin-top:10px;
 }
 
-.footer{
-text-align:center;
-padding:40px;
+.chat-box{
+height:200px;
+overflow:auto;
+background:rgba(0,0,0,0.3);
+padding:10px;
+border-radius:10px;
+margin-bottom:10px;
+font-size:14px;
+}
+
+.msg{
+margin:5px 0;
+}
+
+.user{color:#60a5fa;}
+.ai{color:#34d399;}
+
+.small{
 opacity:0.6;
-font-size:13px;
+font-size:12px;
+text-align:center;
+margin-top:10px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- HERO -->
-<div class="hero">
-<h1>SmartProfit AI</h1>
-<p>
-AI-powered SaaS platform that analyzes business profitability, margins,
-and investment readiness in seconds.
-</p>
-
-<button class="btn" onclick="document.getElementById('app').scrollIntoView()">
-Start analyzing
-</button>
-</div>
-
 <div class="container">
 
-<!-- FEATURES -->
+<div class="header">
+<h1>📊 SmartProfit AI</h1>
+<p>Анализ бизнеса и AI-ассистент для стартапов</p>
+</div>
+
 <div class="grid">
 
+<!-- КАЛЬКУЛЯТОР -->
 <div class="card">
-<h3>📊 Financial Analytics</h3>
-<p>Analyze revenue, costs, profit and margins instantly.</p>
+<h3>📈 Анализ бизнеса</h3>
+
+<input id="revenue" type="number" placeholder="Выручка (₽)">
+<input id="costs" type="number" placeholder="Расходы (₽)">
+
+<button onclick="calc()">Рассчитать</button>
+
+<div class="result" id="result"></div>
+<div class="result" id="score"></div>
 </div>
 
+<!-- AI ЧАТ -->
 <div class="card">
-<h3>🚀 Startup Score</h3>
-<p>Get investment readiness score for your business.</p>
+<h3>🤖 AI ассистент</h3>
+
+<div class="chat-box" id="chat">
+<div class="msg ai">AI: Привет! Напиши вопрос про бизнес 👋</div>
 </div>
 
-<div class="card">
-<h3>📈 Smart Insights</h3>
-<p>Understand if your business is scalable or risky.</p>
+<input id="input" placeholder="Спроси про бизнес...">
+
+<button onclick="askAI()">Отправить</button>
+
+<p class="small">AI пока базовый (без API), но можно подключить настоящий ChatGPT</p>
 </div>
 
 </div>
 
-<!-- APP -->
-<div id="app" class="card" style="margin-top:40px;">
-<h2>Live Demo</h2>
-
-<input id="rev" type="number" placeholder="Revenue ($)">
-<input id="cost" type="number" placeholder="Costs ($)">
-
-<button onclick="calc()">Analyze Business</button>
-
-<div id="result"></div>
-<div id="score"></div>
-
+<!-- ГРАФИК -->
+<div class="card" style="margin-top:15px;">
+<h3>📊 График</h3>
 <canvas id="chart"></canvas>
 </div>
 
-</div>
-
-<div class="footer">
-SmartProfit AI — SaaS prototype for business intelligence
 </div>
 
 <script>
 
 let chart;
 
-/* ANALYTICS EVENT */
-function trackEvent(){
-if(typeof gtag !== "undefined"){
-gtag('event','analysis_run',{
-event_category:'engagement'
-});
-}
-}
-
-/* MAIN FUNCTION */
+/* БИЗНЕС КАЛЬКУЛЯТОР */
 function calc(){
 
-let r = Number(document.getElementById("rev").value);
-let c = Number(document.getElementById("cost").value);
+let r = Number(document.getElementById("revenue").value);
+let c = Number(document.getElementById("costs").value);
+
+if(!r || !c){
+alert("Введите значения");
+return;
+}
 
 let profit = r - c;
-let margin = c > 0 ? (profit / c) * 100 : 0;
+let margin = (profit / c) * 100;
 
-/* SCORE */
 let score = 50;
 if(profit > 0) score += 20;
 if(margin > 20) score += 20;
-if(profit > 2000) score += 10;
+if(profit > 10000) score += 10;
+
 score = Math.min(100, score);
 
-/* UI */
 document.getElementById("result").innerHTML =
-`💰 Profit: $${profit.toFixed(2)} <br>
-📊 Margin: ${margin.toFixed(2)}%`;
+`💰 Прибыль: ${profit.toFixed(2)} ₽<br>
+📊 Маржа: ${margin.toFixed(2)}%`;
+
+let status =
+score > 80 ? "🟢 Сильный бизнес" :
+score > 50 ? "🟡 Средний" :
+"🔴 Слабый";
 
 document.getElementById("score").innerHTML =
-`🚀 Startup Score: ${score}/100`;
+`🚀 Оценка: ${score}/100<br>${status}`;
 
-/* CHART */
 draw(r,c,profit);
-
-/* EVENT TRACK */
-trackEvent();
 }
 
-/* CHART */
+/* ГРАФИК */
 function draw(r,c,p){
 
 let ctx=document.getElementById("chart").getContext("2d");
@@ -220,18 +209,49 @@ if(chart) chart.destroy();
 chart=new Chart(ctx,{
 type:"bar",
 data:{
-labels:["Revenue","Costs","Profit"],
+labels:["Выручка","Расходы","Прибыль"],
 datasets:[{data:[r,c,p]}]
-},
-options:{
-plugins:{legend:{display:false}}
 }
 });
 }
 
-</script>
+/* ПРОСТОЙ AI (без API) */
+function askAI(){
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+let input=document.getElementById("input");
+let text=input.value.trim();
+if(!text) return;
+
+addMsg("user",text);
+
+/* УМНЫЕ ОТВЕТЫ (заглушка) */
+let reply="";
+
+if(text.includes("прибыль")){
+reply="Прибыль = выручка - расходы.";
+}
+else if(text.includes("маржа")){
+reply="Маржа = (прибыль / расходы) * 100%";
+}
+else if(text.includes("бизнес")){
+reply="Хороший бизнес = высокая маржа и стабильная прибыль.";
+}
+else{
+reply="Я пока базовый AI. Можно подключить настоящий ChatGPT API.";
+}
+
+setTimeout(()=>addMsg("ai",reply),400);
+
+input.value="";
+}
+
+function addMsg(type,text){
+let chat=document.getElementById("chat");
+chat.innerHTML += `<div class="msg ${type}">${type==="user"?"Ты":"AI"}: ${text}</div>`;
+chat.scrollTop=chat.scrollHeight;
+}
+
+</script>
 
 </body>
 </html>
