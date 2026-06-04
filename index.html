@@ -3,8 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <title>SmartProfit AI</title>
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#0b1220;
+color:white;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+padding:20px;
+}
+
+.card{
+background:rgba(255,255,255,0.06);
+padding:15px;
+border-radius:12px;
+margin-top:15px;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-top:10px;
+border-radius:8px;
+border:none;
+}
+
+button{
+width:100%;
+padding:12px;
+margin-top:10px;
+background:#4f46e5;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
+h1{text-align:center;}
+.sub{text-align:center;opacity:0.7;}
+</style>
 </head>
 
 <body>
@@ -12,45 +54,54 @@
 <div class="container">
 
 <h1>SmartProfit AI</h1>
-<p class="sub">Система анализа прибыльности бизнеса</p>
+<p class="sub">Аналитика бизнеса и прибыльности</p>
 
 <div class="card">
-<h3>📊 Анализ бизнеса</h3>
+<h3>📊 Ввод данных</h3>
 
-<input id="revenue" type="number" placeholder="Выручка ($)">
-<input id="costs" type="number" placeholder="Расходы ($)">
-<input id="investment" type="number" placeholder="Инвестиции ($)">
+<input id="revenue" type="number" placeholder="Выручка">
+<input id="costs" type="number" placeholder="Расходы">
 
-<button onclick="analyze()">Рассчитать</button>
-</div>
-
-<div class="card">
-<h3>📈 Результаты</h3>
-<div id="metrics">Введите данные</div>
+<button onclick="calc()">Рассчитать</button>
 </div>
 
 <div class="card">
-<h3>🧠 AI оценка</h3>
-<div id="ai">Ожидание анализа...</div>
+<h3>📈 Результат</h3>
+<div id="result">Введите данные</div>
 </div>
 
 <div class="card">
-<h3>🚀 Оценка проекта</h3>
-<div id="score">—</div>
-</div>
-
-<div class="card">
-<canvas id="chart"></canvas>
-</div>
-
-<!-- НАВИГАЦИЯ -->
-<div class="card">
-<a href="chat.html">💬 AI Чат</a> |
-<a href="report.html">📄 Отчёт</a>
+<h3>🧠 AI вывод</h3>
+<div id="ai">—</div>
 </div>
 
 </div>
 
-<script src="app.js"></script>
+<script>
+function calc(){
+
+let r = Number(document.getElementById("revenue").value);
+let c = Number(document.getElementById("costs").value);
+
+let profit = r - c;
+let margin = c > 0 ? (profit / c) * 100 : 0;
+
+document.getElementById("result").innerHTML =
+"Прибыль: $" + profit.toFixed(2) + "<br>" +
+"Маржа: " + margin.toFixed(2) + "%";
+
+let ai = "";
+
+if(profit > 0){
+ai = "Бизнес прибыльный и устойчивый";
+} else {
+ai = "Бизнес убыточный — нужно оптимизировать расходы";
+}
+
+document.getElementById("ai").innerHTML = ai;
+
+}
+</script>
+
 </body>
 </html>
