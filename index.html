@@ -23,16 +23,24 @@ padding:20px;
 
 .header{
 text-align:center;
-padding:20px 0;
+padding:25px 10px;
 }
 
 .header h1{
+font-size:36px;
 margin:0;
-font-size:34px;
 }
 
 .header p{
 opacity:0.7;
+}
+
+.card{
+background:rgba(255,255,255,0.06);
+padding:18px;
+border-radius:14px;
+margin-top:15px;
+backdrop-filter: blur(10px);
 }
 
 .grid{
@@ -43,13 +51,6 @@ gap:15px;
 
 @media(max-width:700px){
 .grid{grid-template-columns:1fr;}
-}
-
-.card{
-background:rgba(255,255,255,0.06);
-padding:18px;
-border-radius:14px;
-backdrop-filter: blur(10px);
 }
 
 input{
@@ -84,27 +85,12 @@ border-radius:10px;
 margin-top:10px;
 }
 
-.chat-box{
-height:200px;
-overflow:auto;
-background:rgba(0,0,0,0.3);
-padding:10px;
-border-radius:10px;
-margin-bottom:10px;
-font-size:14px;
-}
-
-.msg{
-margin:5px 0;
-}
-
-.user{color:#60a5fa;}
-.ai{color:#34d399;}
-
-.small{
-opacity:0.6;
+.badge{
+display:inline-block;
+padding:5px 10px;
+border-radius:8px;
+background:#4f46e5;
 font-size:12px;
-text-align:center;
 margin-top:10px;
 }
 </style>
@@ -116,12 +102,24 @@ margin-top:10px;
 
 <div class="header">
 <h1>📊 SmartProfit AI</h1>
-<p>Анализ бизнеса и AI-ассистент для стартапов</p>
+<p>Система анализа бизнеса для стартапов и предпринимателей</p>
+<div class="badge">MVP Demo</div>
 </div>
 
+<!-- PROBLEM → SOLUTION -->
+<div class="card">
+<h3>❗ Проблема → 💡 Решение</h3>
+<p>
+❗ Предприниматели часто не понимают реальную прибыль бизнеса и считают финансы вручную.
+</p>
+<p>
+💡 SmartProfit AI автоматически считает прибыль, маржу и даёт оценку бизнеса за 1 клик.
+</p>
+</div>
+
+<!-- MAIN GRID -->
 <div class="grid">
 
-<!-- КАЛЬКУЛЯТОР -->
 <div class="card">
 <h3>📈 Анализ бизнеса</h3>
 
@@ -134,26 +132,30 @@ margin-top:10px;
 <div class="result" id="score"></div>
 </div>
 
-<!-- AI ЧАТ -->
 <div class="card">
-<h3>🤖 AI ассистент</h3>
+<h3>📌 Кейс использования</h3>
 
-<div class="chat-box" id="chat">
-<div class="msg ai">AI: Привет! Напиши вопрос про бизнес 👋</div>
+<p>
+Магазин с выручкой 150 000 ₽ и расходами 100 000 ₽.
+</p>
+
+<p>
+Теперь владелец сразу видит:
+- прибыль
+- маржу
+- оценку бизнеса
+</p>
+
+<p>
+👉 помогает быстрее принимать решения о развитии.
+</p>
 </div>
 
-<input id="input" placeholder="Спроси про бизнес...">
-
-<button onclick="askAI()">Отправить</button>
-
-<p class="small">AI пока базовый (без API), но можно подключить настоящий ChatGPT</p>
 </div>
 
-</div>
-
-<!-- ГРАФИК -->
-<div class="card" style="margin-top:15px;">
-<h3>📊 График</h3>
+<!-- CHART -->
+<div class="card">
+<h3>📊 График анализа</h3>
 <canvas id="chart"></canvas>
 </div>
 
@@ -163,43 +165,62 @@ margin-top:10px;
 
 let chart;
 
-/* БИЗНЕС КАЛЬКУЛЯТОР */
 function calc(){
 
 let r = Number(document.getElementById("revenue").value);
 let c = Number(document.getElementById("costs").value);
 
 if(!r || !c){
-alert("Введите значения");
+alert("Введите данные");
 return;
 }
 
 let profit = r - c;
 let margin = (profit / c) * 100;
 
+/* SCORE */
 let score = 50;
+
 if(profit > 0) score += 20;
 if(margin > 20) score += 20;
 if(profit > 10000) score += 10;
 
 score = Math.min(100, score);
 
+/* STATUS */
+let status =
+score > 80 ? "🟢 Сильный бизнес" :
+score > 50 ? "🟡 Средний бизнес" :
+"🔴 Рискованный бизнес";
+
+/* AI-LIKE ADVICE */
+let advice = "";
+
+if(profit < 0){
+advice = "⚠️ Бизнес убыточный. Нужно снизить расходы или увеличить выручку.";
+}
+else if(margin < 10){
+advice = "📉 Низкая маржа. Бизнес работает, но эффективность слабая.";
+}
+else if(margin < 30){
+advice = "📊 Стабильный бизнес. Есть потенциал для роста.";
+}
+else{
+advice = "🚀 Отличная маржинальность. Бизнес выглядит инвестиционно привлекательным.";
+}
+
+/* OUTPUT */
 document.getElementById("result").innerHTML =
 `💰 Прибыль: ${profit.toFixed(2)} ₽<br>
 📊 Маржа: ${margin.toFixed(2)}%`;
 
-let status =
-score > 80 ? "🟢 Сильный бизнес" :
-score > 50 ? "🟡 Средний" :
-"🔴 Слабый";
-
 document.getElementById("score").innerHTML =
-`🚀 Оценка: ${score}/100<br>${status}`;
+`🚀 Оценка: ${score}/100<br>${status}<br><br>${advice}`;
 
 draw(r,c,profit);
 }
 
-/* ГРАФИК */
+/* CHART */
 function draw(r,c,p){
 
 let ctx=document.getElementById("chart").getContext("2d");
@@ -211,44 +232,11 @@ type:"bar",
 data:{
 labels:["Выручка","Расходы","Прибыль"],
 datasets:[{data:[r,c,p]}]
+},
+options:{
+plugins:{legend:{display:false}}
 }
 });
-}
-
-/* ПРОСТОЙ AI (без API) */
-function askAI(){
-
-let input=document.getElementById("input");
-let text=input.value.trim();
-if(!text) return;
-
-addMsg("user",text);
-
-/* УМНЫЕ ОТВЕТЫ (заглушка) */
-let reply="";
-
-if(text.includes("прибыль")){
-reply="Прибыль = выручка - расходы.";
-}
-else if(text.includes("маржа")){
-reply="Маржа = (прибыль / расходы) * 100%";
-}
-else if(text.includes("бизнес")){
-reply="Хороший бизнес = высокая маржа и стабильная прибыль.";
-}
-else{
-reply="Я пока базовый AI. Можно подключить настоящий ChatGPT API.";
-}
-
-setTimeout(()=>addMsg("ai",reply),400);
-
-input.value="";
-}
-
-function addMsg(type,text){
-let chat=document.getElementById("chat");
-chat.innerHTML += `<div class="msg ${type}">${type==="user"?"Ты":"AI"}: ${text}</div>`;
-chat.scrollTop=chat.scrollHeight;
 }
 
 </script>
