@@ -10,61 +10,99 @@
 <style>
 body{
 margin:0;
-font-family:Arial;
-background:linear-gradient(135deg,#0b1220,#111b33);
+font-family:Arial, sans-serif;
+background:#0b0f19;
 color:white;
 }
 
+/* TOP NAV */
+.nav{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:20px 40px;
+}
+
+.logo{
+font-weight:bold;
+font-size:18px;
+}
+
+.badge{
+font-size:12px;
+padding:6px 10px;
+background:#1f2a44;
+border-radius:8px;
+}
+
+/* HERO */
+.hero{
+text-align:center;
+padding:60px 20px;
+}
+
+.hero h1{
+font-size:44px;
+margin-bottom:10px;
+}
+
+.hero p{
+opacity:0.7;
+max-width:600px;
+margin:auto;
+}
+
+.cta{
+margin-top:20px;
+padding:14px 22px;
+border:none;
+border-radius:10px;
+background:#4f46e5;
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+
+/* GRID */
 .container{
-max-width:900px;
+max-width:1000px;
 margin:auto;
 padding:20px;
-}
-
-.header{
-text-align:center;
-padding:25px 10px;
-}
-
-.header h1{
-font-size:36px;
-margin:0;
-}
-
-.header p{
-opacity:0.7;
-}
-
-.card{
-background:rgba(255,255,255,0.06);
-padding:18px;
-border-radius:14px;
-margin-top:15px;
-backdrop-filter: blur(10px);
 }
 
 .grid{
 display:grid;
 grid-template-columns:1fr 1fr;
-gap:15px;
+gap:20px;
+margin-top:30px;
 }
 
-@media(max-width:700px){
+@media(max-width:800px){
 .grid{grid-template-columns:1fr;}
+}
+
+/* CARD */
+.card{
+background:#111827;
+padding:20px;
+border-radius:16px;
+border:1px solid rgba(255,255,255,0.06);
 }
 
 input{
 width:100%;
 padding:12px;
 margin-top:10px;
-border:none;
 border-radius:10px;
+border:none;
 outline:none;
+background:#0b1220;
+color:white;
 }
 
 button{
 width:100%;
-padding:14px;
+padding:12px;
 margin-top:15px;
 border:none;
 border-radius:10px;
@@ -85,43 +123,80 @@ border-radius:10px;
 margin-top:10px;
 }
 
-.badge{
-display:inline-block;
-padding:5px 10px;
-border-radius:8px;
-background:#4f46e5;
+/* FEATURES */
+.features{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:15px;
+margin-top:40px;
+}
+
+@media(max-width:800px){
+.features{grid-template-columns:1fr;}
+}
+
+.feature{
+background:#111827;
+padding:18px;
+border-radius:14px;
+border:1px solid rgba(255,255,255,0.05);
+}
+
+.footer{
+text-align:center;
+opacity:0.5;
 font-size:12px;
-margin-top:10px;
+padding:40px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-
-<div class="header">
-<h1>📊 SmartProfit AI</h1>
-<p>Система анализа бизнеса для стартапов и предпринимателей</p>
+<!-- NAV -->
+<div class="nav">
+<div class="logo">SmartProfit AI</div>
 <div class="badge">MVP Demo</div>
 </div>
 
-<!-- PROBLEM → SOLUTION -->
-<div class="card">
-<h3>❗ Проблема → 💡 Решение</h3>
+<!-- HERO -->
+<div class="hero">
+<h1>Финансовая аналитика для бизнеса</h1>
 <p>
-❗ Предприниматели часто не понимают реальную прибыль бизнеса и считают финансы вручную.
+Быстрый анализ прибыли, расходов и эффективности бизнеса в один клик.
 </p>
-<p>
-💡 SmartProfit AI автоматически считает прибыль, маржу и даёт оценку бизнеса за 1 клик.
-</p>
+
+<button class="cta" onclick="document.getElementById('app').scrollIntoView()">
+Запустить анализ
+</button>
 </div>
 
-<!-- MAIN GRID -->
-<div class="grid">
+<!-- FEATURES -->
+<div class="container">
+<div class="features">
+
+<div class="feature">
+<h3>📊 Анализ прибыли</h3>
+<p>Мгновенный расчёт финансовых показателей</p>
+</div>
+
+<div class="feature">
+<h3>📈 Маржинальность</h3>
+<p>Понимание эффективности бизнеса</p>
+</div>
+
+<div class="feature">
+<h3>🚀 Startup Score</h3>
+<p>Оценка инвестиционной привлекательности</p>
+</div>
+
+</div>
+
+<!-- APP -->
+<div id="app" class="grid">
 
 <div class="card">
-<h3>📈 Анализ бизнеса</h3>
+<h3>📊 Введите данные</h3>
 
 <input id="revenue" type="number" placeholder="Выручка (₽)">
 <input id="costs" type="number" placeholder="Расходы (₽)">
@@ -133,32 +208,16 @@ margin-top:10px;
 </div>
 
 <div class="card">
-<h3>📌 Кейс использования</h3>
-
-<p>
-Магазин с выручкой 150 000 ₽ и расходами 100 000 ₽.
-</p>
-
-<p>
-Теперь владелец сразу видит:
-- прибыль
-- маржу
-- оценку бизнеса
-</p>
-
-<p>
-👉 помогает быстрее принимать решения о развитии.
-</p>
-</div>
-
-</div>
-
-<!-- CHART -->
-<div class="card">
-<h3>📊 График анализа</h3>
+<h3>📈 График</h3>
 <canvas id="chart"></canvas>
 </div>
 
+</div>
+
+</div>
+
+<div class="footer">
+SmartProfit AI — MVP SaaS for business analytics
 </div>
 
 <script>
@@ -178,49 +237,33 @@ return;
 let profit = r - c;
 let margin = (profit / c) * 100;
 
-/* SCORE */
 let score = 50;
-
 if(profit > 0) score += 20;
 if(margin > 20) score += 20;
 if(profit > 10000) score += 10;
 
 score = Math.min(100, score);
 
-/* STATUS */
 let status =
 score > 80 ? "🟢 Сильный бизнес" :
-score > 50 ? "🟡 Средний бизнес" :
-"🔴 Рискованный бизнес";
+score > 50 ? "🟡 Средний" :
+"🔴 Слабый";
 
-/* AI-LIKE ADVICE */
-let advice = "";
+let advice =
+profit < 0 ? "⚠️ Убыток — пересмотрите расходы" :
+margin < 10 ? "📉 Низкая маржа" :
+margin < 30 ? "📊 Стабильный бизнес" :
+"🚀 Инвест-потенциал высокий";
 
-if(profit < 0){
-advice = "⚠️ Бизнес убыточный. Нужно снизить расходы или увеличить выручку.";
-}
-else if(margin < 10){
-advice = "📉 Низкая маржа. Бизнес работает, но эффективность слабая.";
-}
-else if(margin < 30){
-advice = "📊 Стабильный бизнес. Есть потенциал для роста.";
-}
-else{
-advice = "🚀 Отличная маржинальность. Бизнес выглядит инвестиционно привлекательным.";
-}
-
-/* OUTPUT */
 document.getElementById("result").innerHTML =
-`💰 Прибыль: ${profit.toFixed(2)} ₽<br>
-📊 Маржа: ${margin.toFixed(2)}%`;
+`💰 Прибыль: ${profit.toFixed(2)} ₽<br>📊 Маржа: ${margin.toFixed(2)}%`;
 
 document.getElementById("score").innerHTML =
-`🚀 Оценка: ${score}/100<br>${status}<br><br>${advice}`;
+`🚀 Score: ${score}/100<br>${status}<br><br>${advice}`;
 
 draw(r,c,profit);
 }
 
-/* CHART */
 function draw(r,c,p){
 
 let ctx=document.getElementById("chart").getContext("2d");
