@@ -222,16 +222,11 @@ font-size:12px;
 <p>✓ Финансовый анализ</p>
 <p>✓ Startup Score</p>
 <p>✓ Визуализация данных</p>
+<p>✓ Бизнес-ассистент</p>
 
 <br>
 
-<p><b>В разработке:</b></p>
-<ul>
-<li>PDF-отчёты</li>
-<li>Расширенные AI-рекомендации</li>
-<li>Экспорт данных</li>
-<li>Личный кабинет</li>
-</ul>
+
 </div>
 
 </div>
@@ -307,41 +302,7 @@ options:{plugins:{legend:{display:false}}}
 }
 
 /* SIMPLE CHAT */
-async function askAI(){
-
-let input=document.getElementById("input");
-let text=input.value.trim();
-if(!text) return;
-
-addMsg("user",text);
-input.value="";
-
-try{
-
-const response = await fetch("https://api.openai.com/v1/chat/completions", {
-method: "POST",
-headers: {
-"Content-Type": "application/json",
-"Authorization": ""Authorization": "Bearer YOUR_API_KEY_HERE"},
-body: JSON.stringify({
-model: "gpt-4o-mini",
-messages: [
-{role:"system", content:"Ты бизнес-ассистент для анализа малого бизнеса. Отвечай коротко и понятно."},
-{role:"user", content:text}
-]
-})
-});
-
-const data = await response.json();
-
-let reply = data.choices[0].message.content;
-
-addMsg("ai",reply);
-
-}catch(e){
-addMsg("ai","Ошибка AI. Проверь API ключ.");
-}
-}{
+function askAI(){
 
 let input=document.getElementById("input");
 let text=input.value.trim();
